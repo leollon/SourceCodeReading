@@ -711,7 +711,7 @@ class Router:
     def __eq__(self, other: typing.Any) -> bool:
         return isinstance(other, Router) and self.routes == other.routes
 
-    # 如今不鼓励下列的用法，而是在 Router.__init__(...)的时候配置
+    # 现在不鼓励下列的用法，而是在 Router.__init__(...)的时候配置
     def mount(
         self, path: str, app: ASGIApp, name: typing.Optional[str] = None
     ) -> None:  # pragma: nocover
@@ -779,8 +779,8 @@ class Router:
         include_in_schema: bool = True,
     ) -> typing.Callable:  # pragma: nocover
         """
-        We no longer document this decorator style API, and its usage is discouraged.
-        Instead you should use the following approach:
+        我们不再给这些 API 编写文档，并且不鼓励使用它的用法。
+        而是应该使用如下方法：
 
         routes = [
             Route(path, endpoint=..., ...),
@@ -806,8 +806,8 @@ class Router:
         self, path: str, name: typing.Optional[str] = None
     ) -> typing.Callable:  # pragma: nocover
         """
-        We no longer document this decorator style API, and its usage is discouraged.
-        Instead you should use the following approach:
+        我们不再给这些 API 编写文档，并且不鼓励使用它的用法。
+        而是应该使用如下方法：
 
         routes = [
             WebSocketRoute(path, endpoint=..., ...),

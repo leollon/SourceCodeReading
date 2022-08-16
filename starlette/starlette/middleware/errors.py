@@ -124,14 +124,12 @@ CENTER_LINE = """
 
 class ServerErrorMiddleware:
     """
-    Handles returning 500 responses when a server error occurs.
+    当产生服务器错误时，处理程序返回 500 响应。
 
-    If 'debug' is set, then traceback responses will be returned,
-    otherwise the designated 'handler' will be called.
+    如果设置 'debug' 为 True，那么会返回堆栈(traceback)跟踪。否则，将会调用处理该错误的异常处理程序。
 
-    This middleware class should generally be used to wrap *everything*
-    else up, so that unhandled exceptions anywhere in the stack
-    always result in an appropriate 500 response.
+    这个中间件通常来说被用来包裹所有其他中间件，为的是栈中任何地方未被处理的异常总是能够响应适当的 500 响应。
+    
     """
 
     def __init__(
@@ -163,13 +161,13 @@ class ServerErrorMiddleware:
         except Exception as exc:
             request = Request(scope)
             if self.debug:
-                # In debug mode, return traceback responses.
+                # 处于开发模式，则返回堆栈跟踪(traceback)响应。
                 response = self.debug_response(request, exc)
             elif self.handler is None:
-                # Use our default 500 error handler.
+                # 使用默认的 500 错误处理程序。
                 response = self.error_response(request, exc)
             else:
-                # Use an installed 500 error handler.
+                # 使用用户自定义的 500 错误处理程序。
                 if is_async_callable(self.handler):
                     response = await self.handler(request, exc)
                 else:
@@ -178,9 +176,8 @@ class ServerErrorMiddleware:
             if not response_started:
                 await response(scope, receive, send)
 
-            # We always continue to raise the exception.
-            # This allows servers to log the error, or allows test clients
-            # to optionally raise the error within the test case.
+            # 我们总是抛出异常。
+            # 这样使得服务器能够记录错误，或是使得测试客户端在测试用例范围内可选地抛出错误。
             raise exc
 
     def format_line(

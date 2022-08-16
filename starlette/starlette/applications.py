@@ -80,6 +80,18 @@ class Starlette:
             else:
                 exception_handlers[key] = value
 
+        # TODO: Later
+        # middleware = (
+        #     [
+        #         Middleware(
+        #             ExceptionMiddleware, handlers=exception_handlers, debug=debug
+        #         )
+        #     ]
+        #     + self.user_middleware
+        #     + [Middleware(ServerErrorMiddleware, handler=error_handler, debug=debug)]
+        #     
+        # )
+
         middleware = (
             [Middleware(ServerErrorMiddleware, handler=error_handler, debug=debug)]
             + self.user_middleware
@@ -91,6 +103,9 @@ class Starlette:
         )
 
         app = self.router
+        # TODO: Later
+        # removed reversed(...)
+        # for cls, options in middleware:
         for cls, options in reversed(middleware):
             app = cls(app=app, **options)
         return app
@@ -115,8 +130,7 @@ class Starlette:
         scope["app"] = self
         await self.middleware_stack(scope, receive, send)
 
-    # The following usages are now discouraged in favour of configuration
-    # during Starlette.__init__(...)
+    # 现在不再鼓励使用下面的用法，而是在 Starlette.__init__(...) 时进行配置。
     def on_event(self, event_type: str) -> typing.Callable:  # pragma: nocover
         return self.router.on_event(event_type)
 
@@ -124,8 +138,7 @@ class Starlette:
         self, path: str, app: ASGIApp, name: typing.Optional[str] = None
     ) -> None:  # pragma: nocover
         """
-        We no longer document this API, and its usage is discouraged.
-        Instead you should use the following approach:
+        我们不再为这个 API 编写文档，并且不鼓励使用这个方法。而是使用如下方式：
 
         routes = [
             Mount(path, ...),
@@ -141,8 +154,7 @@ class Starlette:
         self, host: str, app: ASGIApp, name: typing.Optional[str] = None
     ) -> None:  # pragma: no cover
         """
-        We no longer document this API, and its usage is discouraged.
-        Instead you should use the following approach:
+        我们不再为这个 API 编写文档，并且不鼓励使用这个方法。而是使用如下方式：
 
         routes = [
             Host(path, ...),
@@ -207,8 +219,7 @@ class Starlette:
         include_in_schema: bool = True,
     ) -> typing.Callable:  # pragma: nocover
         """
-        We no longer document this decorator style API, and its usage is discouraged.
-        Instead you should use the following approach:
+        我们不再为这个 API 编写文档，并且不鼓励使用这个方法。而是使用如下方式：
 
         routes = [
             Route(path, endpoint=..., ...),
@@ -234,8 +245,7 @@ class Starlette:
         self, path: str, name: typing.Optional[str] = None
     ) -> typing.Callable:  # pragma: nocover
         """
-        We no longer document this decorator style API, and its usage is discouraged.
-        Instead you should use the following approach:
+        我们不再为这个 API 编写文档，并且不鼓励使用这个方法。而是使用如下方式：
 
         routes = [
             WebSocketRoute(path, endpoint=..., ...),
@@ -253,8 +263,7 @@ class Starlette:
 
     def middleware(self, middleware_type: str) -> typing.Callable:  # pragma: nocover
         """
-        We no longer document this decorator style API, and its usage is discouraged.
-        Instead you should use the following approach:
+        我们不再为这个 API 编写文档，并且不鼓励使用这个方法。而是使用如下方式：
 
         middleware = [
             Middleware(...),
