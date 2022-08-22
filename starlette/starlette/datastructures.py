@@ -129,7 +129,7 @@ class URL:
                 netloc = f"{userpass}@{netloc}"
 
             kwargs["netloc"] = netloc
-
+        # self.components: SplitResult
         components = self.components._replace(**kwargs)
         return self.__class__(components.geturl())
 
@@ -501,7 +501,7 @@ class FormData(ImmutableMultiDict[str, typing.Union[UploadFile, str]]):
 
 class Headers(typing.Mapping[str, str]):
     """
-    An immutable, case-insensitive multidict.
+    一个可变并且忽略大小写的 multidict。
     """
 
     def __init__(
@@ -593,8 +593,7 @@ class Headers(typing.Mapping[str, str]):
 class MutableHeaders(Headers):
     def __setitem__(self, key: str, value: str) -> None:
         """
-        Set the header `key` to `value`, removing any duplicate entries.
-        Retains insertion order.
+        设置头部中的 `key` 的值为 `value`，移除任何重复的条目。保持插入的顺序。
         """
         set_key = key.lower().encode("latin-1")
         set_value = value.encode("latin-1")
@@ -604,6 +603,8 @@ class MutableHeaders(Headers):
             if item_key == set_key:
                 found_indexes.append(idx)
 
+        # TODO: Later
+        # Why does it have to be reversed??
         for idx in reversed(found_indexes[1:]):
             del self._list[idx]
 
@@ -615,7 +616,7 @@ class MutableHeaders(Headers):
 
     def __delitem__(self, key: str) -> None:
         """
-        Remove the header `key`.
+        移除头部中的某个 `key`。
         """
         del_key = key.lower().encode("latin-1")
 
@@ -646,12 +647,13 @@ class MutableHeaders(Headers):
 
     def setdefault(self, key: str, value: str) -> str:
         """
-        If the header `key` does not exist, then set it to `value`.
-        Returns the header value.
+        如果头部（header）中的 `key` 不存在，那么在头部中设置该 `key` 为 `value`。
+        返回头部中的该 `key` 的值。
         """
         set_key = key.lower().encode("latin-1")
         set_value = value.encode("latin-1")
 
+        # TODO: Removed idx, maybe?
         for idx, (item_key, item_value) in enumerate(self._list):
             if item_key == set_key:
                 return item_value.decode("latin-1")

@@ -22,8 +22,8 @@ from starlette.websockets import WebSocket, WebSocketClose
 
 class NoMatchFound(Exception):
     """
-    Raised by `.url_for(name, **path_params)` and `.url_path_for(name, **path_params)`
-    if no matching route exists.
+    如果不存在要匹配的路由，则由 `.url_for(name, **path_params)` 以及 `.url_path_for(name, **path_params)`
+    抛出这个异常。
     """
 
     def __init__(self, name: str, path_params: typing.Dict[str, typing.Any]) -> None:
@@ -39,9 +39,9 @@ class Match(Enum):
 
 def iscoroutinefunction_or_partial(obj: typing.Any) -> bool:  # pragma: no cover
     """
-    Correctly determines if an object is a coroutine function,
-    including those wrapped in functools.partial objects.
+    确定一个对象是否是一个 coroutine function，包括那些包装在 functools.partial 对象中的对象。
     """
+    # 这个函数在将来发布的版本中将会被移除
     warnings.warn(
         "iscoroutinefunction_or_partial is deprecated, "
         "and will be removed in a future release.",
@@ -54,8 +54,7 @@ def iscoroutinefunction_or_partial(obj: typing.Any) -> bool:  # pragma: no cover
 
 def request_response(func: typing.Callable) -> ASGIApp:
     """
-    Takes a function or coroutine `func(request) -> response`,
-    and returns an ASGI application.
+    接收一个普通函数或 coroutine `func(request) -> response` 作为参数，并且返回一个 ASGI 应用程序。
     """
     is_coroutine = is_async_callable(func)
 
@@ -72,7 +71,7 @@ def request_response(func: typing.Callable) -> ASGIApp:
 
 def websocket_session(func: typing.Callable) -> ASGIApp:
     """
-    Takes a coroutine `func(session)`, and returns an ASGI application.
+    接收一个 coroutine `func(session)` 作为参数，并且返回一个 ASGI 应用程序。
     """
     # assert asyncio.iscoroutinefunction(func), "WebSocket endpoints must be async"
 
@@ -177,9 +176,9 @@ class BaseRoute:
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """
-        A route may be used in isolation as a stand-alone ASGI app.
-        This is a somewhat contrived case, as they'll almost always be used
-        within a Router, but could be useful for some tooling and minimal apps.
+        路由可以被作为单个 ASGI app 单独使用。
+        对与某种情况来说，因为它们总是被用在一个 Router 中，但是对于一些工具和轻量的(minimal)应用程序(apps)来说，
+        可能会用处。
         """
         match, child_scope = self.matches(scope)
         if match == Match.NONE:
