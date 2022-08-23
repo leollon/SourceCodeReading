@@ -38,6 +38,7 @@ async def run_in_threadpool(
     if kwargs:  # pragma: no cover
         # run_sync 不接收 'kwargs', 所以在这里将 kwargs 和 func 绑定在一起
         func = functools.partial(func, **kwargs)
+    # https://anyio.readthedocs.io/en/stable/threads.html?highlight=to_thread.run_sync#calling-asynchronous-code-from-a-worker-thread
     return await anyio.to_thread.run_sync(func, *args)
 
 

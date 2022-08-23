@@ -14,9 +14,8 @@ class Address(typing.NamedTuple):
 
 
 _KeyType = typing.TypeVar("_KeyType")
-# Mapping keys are invariant but their values are covariant since
-# you can only read them
-# that is, you can't do `Mapping[str, Animal]()["fido"] = Dog()`
+# 映射的键是不可变的，但它们的值是共变的（convariant）。
+# 由于你只能读取它们，因此你不能这样子做 `Mapping[str, ANimal]()["fido"] = Dog()`。
 _CovariantValueType = typing.TypeVar("_CovariantValueType", covariant=True)
 
 
@@ -169,8 +168,8 @@ class URL:
 
 class URLPath(str):
     """
-    A URL path string that may also hold an associated protocol and/or host.
-    Used by the routing to return `url_path_for` matches.
+    URL 路径字符串，它也可能含有相关的协议（protocol）以及/或主机（host）。
+    由 routing 使用来返回 `url_path_for` 匹配的对象。
     """
 
     def __new__(cls, path: str, protocol: str = "", host: str = "") -> "URLPath":
@@ -199,8 +198,8 @@ class URLPath(str):
 
 class Secret:
     """
-    Holds a string value that should not be revealed in tracebacks etc.
-    You should cast the value to `str` at the point it is required.
+    保存一个不应该在 tracebacks 中不应该暴露出来的字符串。
+    在有需要的地方，应该将该值转换为 `str`。
     """
 
     def __init__(self, value: str):
@@ -218,10 +217,15 @@ class Secret:
 
 
 class CommaSeparatedStrings(Sequence):
+    """
+    逗号分隔的字符串
+    """
     def __init__(self, value: typing.Union[str, typing.Sequence[str]]):
         if isinstance(value, str):
             splitter = shlex(value, posix=True)
+            # 按逗号进行字符串分割
             splitter.whitespace = ","
+            # 仅按照 splitter 设置的分割标志来进行字符串分割
             splitter.whitespace_split = True
             self._items = [item.strip() for item in splitter]
         else:
@@ -385,7 +389,7 @@ class MultiDict(ImmutableMultiDict[typing.Any, typing.Any]):
 
 class QueryParams(ImmutableMultiDict[str, str]):
     """
-    An immutable multidict.
+    不可变的 multidict
     """
 
     def __init__(
@@ -425,12 +429,12 @@ class QueryParams(ImmutableMultiDict[str, str]):
 
 class UploadFile:
     """
-    An uploaded file included as part of the request data.
+    上传的文件数据包含在部分请求数据中。
     """
 
     spool_max_size = 1024 * 1024
     file: typing.BinaryIO
-    headers: "Headers"
+    headers: "Headers"  # type: class Headers
 
     def __init__(
         self,
@@ -450,11 +454,13 @@ class UploadFile:
 
     @property
     def _in_memory(self) -> bool:
+        # self.file is saved on disk, then it, file-like object, has `_rolled` attribute.
         rolled_to_disk = getattr(self.file, "_rolled", True)
         return not rolled_to_disk
 
     async def write(self, data: bytes) -> None:
         if self._in_memory:
+            # 文件保存在内存中
             self.file.write(data)
         else:
             await run_in_threadpool(self.file.write, data)
@@ -479,7 +485,8 @@ class UploadFile:
 
 class FormData(ImmutableMultiDict[str, typing.Union[UploadFile, str]]):
     """
-    An immutable multidict, containing both file uploads and text input.
+    可变的 multidic，包括文件上传以及文本输入。
+    表单数据提交。
     """
 
     def __init__(
@@ -494,6 +501,7 @@ class FormData(ImmutableMultiDict[str, typing.Union[UploadFile, str]]):
         super().__init__(*args, **kwargs)
 
     async def close(self) -> None:
+        # TODO: Later, removed key, maybe?
         for key, value in self.multi_items():
             if isinstance(value, UploadFile):
                 await value.close()
