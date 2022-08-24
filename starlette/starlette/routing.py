@@ -412,6 +412,7 @@ class Mount(BaseRoute):
             )
             if path_kwarg is not None:
                 remaining_params["path"] = path_kwarg
+            # TODO: Why not remove [], since self.routes is a property which comes from getattr(self.app, "routes", []).
             for route in self.routes or []:
                 try:
                     url = route.url_path_for(remaining_name, **remaining_params)
@@ -481,6 +482,7 @@ class Host(BaseRoute):
             host, remaining_params = replace_params(
                 self.host_format, self.param_convertors, path_params
             )
+            # TODO: Why not remove [], since self.routes is a property which comes from getattr(self.app, "routes", []).
             for route in self.routes or []:
                 try:
                     url = route.url_path_for(remaining_name, **remaining_params)

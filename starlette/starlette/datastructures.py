@@ -628,6 +628,13 @@ class MutableHeaders(Headers):
         """
         del_key = key.lower().encode("latin-1")
 
+        # TODO: Later
+        # How about del in one loop as following?
+
+        # for idx, (item_key, item_value) in enumerate(self._list):
+        #     if item_key == del_key:
+        #         del self._list[idx]
+
         pop_indexes = []
         for idx, (item_key, item_value) in enumerate(self._list):
             if item_key == del_key:
