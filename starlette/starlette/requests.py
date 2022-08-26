@@ -61,8 +61,7 @@ class ClientDisconnect(Exception):
 
 class HTTPConnection(typing.Mapping[str, typing.Any]):
     """
-    A base class for incoming HTTP connections, that is used to provide
-    any functionality that is common to both `Request` and `WebSocket`.
+    HTTP 连接基类。用于向 `Request` 以及 `WebSocket`提供常见的任何功能。
     """
 
     def __init__(self, scope: Scope, receive: typing.Optional[Receive] = None) -> None:
@@ -78,9 +77,8 @@ class HTTPConnection(typing.Mapping[str, typing.Any]):
     def __len__(self) -> int:
         return len(self.scope)
 
-    # Don't use the `abc.Mapping.__eq__` implementation.
-    # Connection instances should never be considered equal
-    # unless `self is other`.
+    # 不要使用 `abc.Mapping.__eq__`。
+    # 连接实例应该不考虑是相等的，除非 `self is other`。
     __eq__ = object.__eq__
     __hash__ = object.__hash__
 
@@ -165,10 +163,9 @@ class HTTPConnection(typing.Mapping[str, typing.Any]):
     @property
     def state(self) -> State:
         if not hasattr(self, "_state"):
-            # Ensure 'state' has an empty dict if it's not already populated.
+            # 如果还未存在这个属性，则确保 'state' 有一个空字典
             self.scope.setdefault("state", {})
-            # Create a state instance with a reference to the dict in which it should
-            # store info
+            # 创建一个状态实例，使用引用，引用一个存储信息的字典。
             self._state = State(self.scope["state"])
         return self._state
 
