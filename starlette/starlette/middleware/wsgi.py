@@ -17,7 +17,7 @@ warnings.warn(
 
 def build_environ(scope: Scope, body: bytes) -> dict:
     """
-    Builds a scope and request body into a WSGI environ object.
+    在 WSGI environ 对象中构造一个 scope 以及 request body。
     """
     environ = {
         "REQUEST_METHOD": scope["method"],
@@ -34,16 +34,16 @@ def build_environ(scope: Scope, body: bytes) -> dict:
         "wsgi.run_once": False,
     }
 
-    # Get server name and port - required in WSGI, not in ASGI
+    # 获取服务器名字以及端口 - 在 WSGI 中需要，而不是在 ASIGI 中。
     server = scope.get("server") or ("localhost", 80)
     environ["SERVER_NAME"] = server[0]
     environ["SERVER_PORT"] = server[1]
 
-    # Get client IP address
+    # 获取客户端 IP 地址
     if scope.get("client"):
         environ["REMOTE_ADDR"] = scope["client"][0]
 
-    # Go through headers and make them into environ entries
+    # 遍历 headers，并且将它们放入到 environ 中
     for name, value in scope.get("headers", []):
         name = name.decode("latin1")
         if name == "content-length":

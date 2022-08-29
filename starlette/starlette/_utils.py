@@ -4,6 +4,8 @@ import typing
 
 
 def is_async_callable(obj: typing.Any) -> bool:
+    """判断可调用对象是不是异步的
+    """
     while isinstance(obj, functools.partial):
         obj = obj.func
 

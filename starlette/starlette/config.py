@@ -57,6 +57,8 @@ class Config:
     ) -> None:
         self.environ = environ
         self.file_values: typing.Dict[str, str] = {}
+        # TODO: Later
+        # if env_file is not None and Path(env_file).is_file():
         if env_file is not None and os.path.isfile(env_file):
             self.file_values = self._read_file(env_file)
 
@@ -135,6 +137,8 @@ class Config:
             value = value.lower()
             if value not in mapping:
                 raise ValueError(
+                    # TODO: Later
+                    # f"Config {key!r} has value {value!r}. Not a valid bool."
                     f"Config '{key}' has value '{value}'. Not a valid bool."
                 )
             return mapping[value]
@@ -142,5 +146,7 @@ class Config:
             return cast(value)
         except (TypeError, ValueError):
             raise ValueError(
+                # TODO: Later
+                # f"Config {key!r} has value {value!r}. Not a valid {cast.__name__}."
                 f"Config '{key}' has value '{value}'. Not a valid {cast.__name__}."
             )
