@@ -36,7 +36,16 @@ class BaseHTTPMiddleware:
                         await self.app(scope, request.receive, send_stream.send)
                     except Exception as exc:
                         app_exc = exc
-
+            # where is task_group from?
+            # https://stackoverflow.com/questions/3012488/what-is-the-python-with-statement-designed-for
+            # In other words, this is inside `with` statement context manager.
+            # example code:
+            # class A:
+            #     def __call__(self):
+            #         def call_next():
+            #             fp.write("hello world")
+            #         with open("tempfile", "w") as fp:
+            #             call_next()
             task_group.start_soon(coro)
 
             try:

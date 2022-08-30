@@ -95,6 +95,8 @@ def test_streaming_response(test_client_factory):
     async def app(scope, receive, send):
         async def numbers(minimum, maximum):
             for i in range(minimum, maximum + 1):
+                # https://stackoverflow.com/questions/12068827/what-is-a-yield-statement-in-a-function
+                # Make function `numbers` a generator
                 yield str(i)
                 if i != maximum:
                     yield ", "
@@ -103,6 +105,9 @@ def test_streaming_response(test_client_factory):
         async def numbers_for_cleanup(start=1, stop=5):
             nonlocal filled_by_bg_task
             async for thing in numbers(start, stop):
+                # TODO: Later
+                # Is this explicitly?
+                # filled_by_bg_task += thing
                 filled_by_bg_task = filled_by_bg_task + thing
 
         cleanup_task = BackgroundTask(numbers_for_cleanup, start=6, stop=9)

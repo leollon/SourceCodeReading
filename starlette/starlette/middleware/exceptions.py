@@ -85,8 +85,6 @@ class ExceptionMiddleware:
                 response = await run_in_threadpool(handler, request, exc)
             await response(scope, receive, sender)
 
-    # TODO: Later
-    # def http_exception(self, exc: HTTPException) -> Response:
     def http_exception(self, request: Request, exc: HTTPException) -> Response:
         if exc.status_code in {204, 304}:
             return Response(status_code=exc.status_code, headers=exc.headers)

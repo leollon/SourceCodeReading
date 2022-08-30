@@ -44,9 +44,12 @@ class CORSMiddleware:
 
         preflight_headers = {}
         if preflight_explicit_allow_origin:
-            # The origin value will be set in preflight_response() if it is allowed.
+            # 如果允许，origin 的值将会在 preflight_response() 中设置。
             preflight_headers["Vary"] = "Origin"
         else:
+            # means "*" in allow_origins is True.
+            # preflight_explicit_allow_origin = False,
+            # (allow_all_origins = True or (allow_all_origins = True and allow_credentials = False))
             preflight_headers["Access-Control-Allow-Origin"] = "*"
         preflight_headers.update(
             {
@@ -93,11 +96,13 @@ class CORSMiddleware:
 
     def is_allowed_origin(self, origin: str) -> bool:
         if self.allow_all_origins:
+            # 允许所有请求源
             return True
 
         if self.allow_origin_regex is not None and self.allow_origin_regex.fullmatch(
             origin
         ):
+            # 匹配请求源是否完全匹配允许的源
             return True
 
         return origin in self.allow_origins
@@ -107,13 +112,16 @@ class CORSMiddleware:
         requested_method = request_headers["access-control-request-method"]
         requested_headers = request_headers.get("access-control-request-headers")
 
+        # TODO: Later
+        # self.preflight_headers is always a dict, therefore it directly can be as follows:
+        # headers = self.preflight_headers
         headers = dict(self.preflight_headers)
         failures = []
 
         if self.is_allowed_origin(origin=requested_origin):
             if self.preflight_explicit_allow_origin:
-                # The "else" case is already accounted for in self.preflight_headers
-                # and the value would be "*".
+                # "else" 条件已经在 self.preflight_headers 中考虑到了，并且这个会是 "*"。
+                # 在 49 行
                 headers["Access-Control-Allow-Origin"] = requested_origin
         else:
             failures.append("origin")
@@ -159,13 +167,11 @@ class CORSMiddleware:
         origin = request_headers["Origin"]
         has_cookie = "cookie" in request_headers
 
-        # If request includes any cookie headers, then we must respond
-        # with the specific origin instead of '*'.
+        # 如果请求中包含有任何 cookie，那么必须使用指定的 origin 而不是 '*' 来响应。
         if self.allow_all_origins and has_cookie:
             self.allow_explicit_origin(headers, origin)
 
-        # If we only allow specific origins, then we have to mirror back
-        # the Origin header in the response.
+        # 如果只允许指定的 origin，那么在响应中应当(have to)镜像返回 Origin header。
         elif not self.allow_all_origins and self.is_allowed_origin(origin=origin):
             self.allow_explicit_origin(headers, origin)
 

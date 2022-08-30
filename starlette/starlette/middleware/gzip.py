@@ -45,19 +45,19 @@ class GZipResponder:
     async def send_with_gzip(self, message: Message) -> None:
         message_type = message["type"]
         if message_type == "http.response.start":
-            # Don't send the initial message until we've determined how to
-            # modify the outgoing headers correctly.
+            # 在确定如何正确修改发送出去的 headers 之前，不会发送初始消息。
             self.initial_message = message
         elif message_type == "http.response.body" and not self.started:
+            # 未开始发送 body
             self.started = True
             body = message.get("body", b"")
             more_body = message.get("more_body", False)
             if len(body) < self.minimum_size and not more_body:
-                # Don't apply GZip to small outgoing responses.
+                # 如果要发送的 body 小于最小压缩值并且没有更多的 body 了
                 await self.send(self.initial_message)
                 await self.send(message)
             elif not more_body:
-                # Standard GZip response.
+                # 要发送的 body 大于最小值并且没有更多的 body 了，使用 GZip 进行压缩
                 self.gzip_file.write(body)
                 self.gzip_file.close()
                 body = self.gzip_buffer.getvalue()
@@ -71,7 +71,8 @@ class GZipResponder:
                 await self.send(self.initial_message)
                 await self.send(message)
             else:
-                # Initial body in streaming GZip response.
+                # more_body = True or (more_body = True and len(body) > self.minimum_size)
+                # 在 GZip 流响应中的初始 body。
                 headers = MutableHeaders(raw=self.initial_message["headers"])
                 headers["Content-Encoding"] = "gzip"
                 headers.add_vary_header("Accept-Encoding")
@@ -86,7 +87,7 @@ class GZipResponder:
                 await self.send(message)
 
         elif message_type == "http.response.body":
-            # Remaining body in streaming GZip response.
+            # GZip 流响应中剩余的 body
             body = message.get("body", b"")
             more_body = message.get("more_body", False)
 
