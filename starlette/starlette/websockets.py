@@ -29,7 +29,7 @@ class WebSocket(HTTPConnection):
 
     async def receive(self) -> Message:
         """
-        Receive ASGI websocket messages, ensuring valid state transitions.
+        接收 ASGI websocket 消息，确保有效状态转换。
         """
         if self.client_state == WebSocketState.CONNECTING:
             message = await self._receive()
@@ -59,7 +59,7 @@ class WebSocket(HTTPConnection):
 
     async def send(self, message: Message) -> None:
         """
-        Send ASGI websocket messages, ensuring valid state transitions.
+        发送 ASGI websockt 信息，确保有效状态转换。
         """
         if self.application_state == WebSocketState.CONNECTING:
             message_type = message["type"]
@@ -94,7 +94,7 @@ class WebSocket(HTTPConnection):
         headers = headers or []
 
         if self.client_state == WebSocketState.CONNECTING:
-            # If we haven't yet seen the 'connect' message, then wait for it first.
+            # 如果还没有收到 'connect' 消息，那么首先等待它的到来。
             await self.receive()
         await self.send(
             {"type": "websocket.accept", "subprotocol": subprotocol, "headers": headers}
